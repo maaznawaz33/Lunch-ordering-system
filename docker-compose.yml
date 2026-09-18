@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-lunch_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set a strong password in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-lunch_ordering}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    # Do NOT publish 5432 to the host in production - only the backend
+    # container needs to reach it, on the internal Docker network.
+    expose:
+      - "5432"
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - db
+    ports:
+      - "4000:4000"
+    # In production, put this behind Nginx/Cloudflare rather than exposing
+    # port 4000 directly to the internet.
+
+volumes:
+  db_data:
