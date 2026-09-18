@@ -8,6 +8,17 @@ import ChangePassword from './pages/shared/ChangePassword';
 import EmployeeDashboard from './pages/employee/Dashboard';
 import AdminDashboard from './pages/admin/Dashboard';
 
+// Top-level route map for the whole app.
+//
+//   /login            - anyone
+//   /register          - anyone
+//   /verify-email       - anyone (link from the verification email)
+//   /change-password    - any logged-in user (employee or admin)
+//   /                  - employees' ordering screen (also reachable by admins)
+//   /admin              - admin-only dashboard
+//
+// ProtectedRoute checks AuthContext and redirects to /login if there's no
+// session, or back to / if the user's role isn't in allowedRoles.
 export default function App() {
   return (
     <AuthProvider>

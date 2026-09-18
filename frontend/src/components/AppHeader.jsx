@@ -1,15 +1,13 @@
 import { Link } from 'react-router-dom';
+import BrandMark from './BrandMark';
 
-const LOGO_URL =
-  'https://365news.pk/wp-content/uploads/2025/01/channels4_profile-removebg-preview-1.png';
-
+// Top navigation bar shown on both the employee and admin dashboards.
+// "onLogout" is passed in by whichever page renders this (see
+// pages/employee/Dashboard.jsx and pages/admin/Dashboard.jsx).
 export default function AppHeader({ onLogout }) {
   return (
     <div className="topbar">
-      <div className="topbar-brand">
-        <img src={LOGO_URL} alt="Company logo" />
-        <span>Lunch Board</span>
-      </div>
+      <BrandMark />
       <div className="topbar-actions">
         <Link to="/change-password">Change password</Link>
         <button className="btn btn-quiet" onClick={onLogout}>

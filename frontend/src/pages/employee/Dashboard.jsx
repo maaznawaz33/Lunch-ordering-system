@@ -3,14 +3,24 @@ import api from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 import AppHeader from '../../components/AppHeader';
 
+// Employee's main screen: shows whichever day's menu is currently
+// orderable (see backend/src/utils/orderWindow.js for the "today before
+// 9:30, tomorrow after 9:30" logic), a quantity picker, and their past
+// order history.
 export default function EmployeeDashboard() {
   const { user, logout } = useAuth();
+
   const [menu, setMenu] = useState(null);
+  // dayLabel is "Today" or "Tomorrow"; weekday is e.g. "Saturday".
+  // Both come straight from the backend's /menus/today response so the
+  // frontend never has to duplicate the cutoff-time math itself.
   const [dayInfo, setDayInfo] = useState({ dayLabel: '', weekday: '' });
+
   const [quantity, setQuantity] = useState(1);
   const [orders, setOrders] = useState([]);
+
   const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState('success');
+  const [messageType, setMessageType] = useState('success'); // 'success' | 'error'
 
   async function loadData() {
     try {
@@ -18,6 +28,9 @@ export default function EmployeeDashboard() {
       setMenu(menuRes.data.menu);
       setDayInfo({ dayLabel: menuRes.data.dayLabel, weekday: menuRes.data.weekday });
     } catch (err) {
+      // A 404 here just means that day's menu hasn't been published yet -
+      // the backend still sends dayLabel/weekday on the error response so
+      // we can show "Saturday's menu hasn't been published yet."
       setMenu(null);
       setDayInfo({
         dayLabel: err.response?.data?.dayLabel || '',
@@ -28,7 +41,9 @@ export default function EmployeeDashboard() {
     setOrders(ordersRes.data.orders);
   }
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => {
+    loadData();
+  }, []);
 
   async function handleOrder(e) {
     e.preventDefault();
@@ -37,7 +52,7 @@ export default function EmployeeDashboard() {
       await api.post('/orders', { quantity });
       setMessage(`Order confirmed for ${dayInfo.weekday || 'the selected day'}.`);
       setMessageType('success');
-      loadData();
+      loadData(); // refresh so the order history list picks up the new order
     } catch (err) {
       setMessage(err.response?.data?.error || 'Failed to place order.');
       setMessageType('error');
@@ -53,7 +68,9 @@ export default function EmployeeDashboard() {
       <AppHeader onLogout={logout} />
       <div className="page-wide">
         <h1>Hi, {user?.fullName?.split(' ')[0]}</h1>
-        <p className="greeting">Orders close daily at 9:30 AM — after that, you're ordering for the next day.</p>
+        <p className="greeting">
+          Orders close daily at 9:30 AM — after that, you're ordering for the next day.
+        </p>
 
         <div className="menu-hero">
           {menu ? (
@@ -64,15 +81,28 @@ export default function EmployeeDashboard() {
               <form className="order-form" onSubmit={handleOrder}>
                 <div className="field">
                   <label>Quantity</label>
-                  <input type="number" min="1" max="10" value={quantity} onChange={(e) => setQuantity(e.target.value)} />
+                  <input
+                    type="number"
+                    min="1"
+                    max="10"
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                  />
                 </div>
-                <button type="submit" className="btn">Confirm order</button>
+                <button type="submit" className="btn">
+                  Confirm order
+                </button>
               </form>
-              {message && <p className={messageType === 'error' ? 'msg-error' : 'msg-success'}>{message}</p>}
+              {message && (
+                <p className={messageType === 'error' ? 'msg-error' : 'msg-success'}>{message}</p>
+              )}
             </>
           ) : (
             <p className="menu-empty">
-              {dayInfo.weekday ? `${dayInfo.weekday}'s menu hasn't been published yet.` : "Menu hasn't been published yet."} Check back shortly.
+              {dayInfo.weekday
+                ? `${dayInfo.weekday}'s menu hasn't been published yet.`
+                : "Menu hasn't been published yet."}{' '}
+              Check back shortly.
             </p>
           )}
         </div>
@@ -84,8 +114,15 @@ export default function EmployeeDashboard() {
           <ul className="order-list">
             {orders.map((o) => (
               <li key={o.id}>
-                <span className="order-date">{new Date(o.menu.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
-                <span style={{ flex: 1, marginLeft: '1rem' }}>{o.menu.itemName} × {o.quantity}</span>
+                <span className="order-date">
+                  {new Date(o.menu.date).toLocaleDateString(undefined, {
+                    month: 'short',
+                    day: 'numeric',
+                  })}
+                </span>
+                <span style={{ flex: 1, marginLeft: '1rem' }}>
+                  {o.menu.itemName} × {o.quantity}
+                </span>
                 <span style={{ marginRight: '1rem' }}>Rs. {o.totalAmount}</span>
                 <span className="order-status">{o.status}</span>
               </li>

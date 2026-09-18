@@ -1,114 +1,560 @@
+/* =============================================================
+   DESIGN TOKENS
+   Change colors, fonts, and spacing here and they update
+   everywhere in the app - every component below references
+   these variables instead of hardcoding values.
+   ============================================================= */
 :root {
-  --ink: #1f2a24;
-  --ink-soft: #4a5750;
-  --base: #fbf9f5;
-  --base-raised: #ffffff;
-  --accent: #c97a2b;
-  --accent-dark: #a8621e;
-  --accent-chili: #8b2635;
+  /* Text colors */
+  --ink: #1f2a24;          /* main text color */
+  --ink-soft: #4a5750;     /* secondary/muted text (labels, captions) */
+
+  /* Backgrounds */
+  --base: #fbf9f5;         /* page background */
+  --base-raised: #ffffff;  /* cards, inputs, anything "on top" of the page */
+
+  /* Brand / accent colors */
+  --accent: #c97a2b;       /* primary buttons, price tags, active states */
+  --accent-dark: #a8621e;  /* hover state for accent, links */
+  --accent-chili: #8b2635; /* errors, delete/danger actions */
+  --success: #3f7a52;      /* success messages, "completed" status */
+
+  /* Borders */
   --line: #e4dfd3;
-  --success: #3f7a52;
+
+  /* Fonts - both set to Poppins; kept as two variables in case you
+     want a different font for headings vs body text later. */
   --font-display: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-body: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --radius: 4px;
+
+  --radius: 4px; /* corner rounding used everywhere (buttons, cards, inputs) */
 }
-* { box-sizing: border-box; }
-html, body, #root { height: 100%; }
+
+/* =============================================================
+   BASE / RESET
+   ============================================================= */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
 body {
-  margin: 0; background: var(--base); color: var(--ink);
-  font-family: var(--font-body); font-size: 15px; line-height: 1.5;
+  margin: 0;
+  background: var(--base);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
-h1, h2, h3 { font-family: var(--font-display); font-weight: 600; color: var(--ink); margin: 0 0 0.4em; }
-h1 { font-size: 1.9rem; letter-spacing: -0.01em; }
-h2 { font-size: 1.3rem; margin-top: 2.2rem; }
-p { margin: 0 0 0.75rem; }
-a { color: var(--accent-dark); text-decoration: none; }
-a:hover { text-decoration: underline; }
-.page { min-height: 100%; }
-.page-narrow { max-width: 380px; margin: 0 auto; padding: 4.5rem 1.5rem 3rem; }
-.page-wide { max-width: 960px; margin: 0 auto; padding: 0 1.5rem 3rem; }
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0 0 0.4em;
+}
+
+h1 {
+  font-size: 1.9rem;
+  letter-spacing: -0.01em;
+}
+
+h2 {
+  font-size: 1.3rem;
+  margin-top: 2.2rem; /* gives section headings breathing room from the content above */
+}
+
+p {
+  margin: 0 0 0.75rem;
+}
+
+a {
+  color: var(--accent-dark);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* =============================================================
+   BRAND WORDMARK ("Order Your Lunch" text logo)
+   Used by components/BrandMark.jsx. No image file involved -
+   swap the text or colors here if you want to change the brand look.
+   ============================================================= */
+.brand-mark {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.15rem; /* small size, used in the top nav bar */
+  color: var(--ink);
+}
+
+.brand-mark-accent {
+  color: var(--accent-dark); /* highlights the word "Order" */
+}
+
+.brand-mark-lg {
+  display: block;
+  text-align: center;
+  font-size: 1.6rem; /* large size, used above the login/register cards */
+  margin-bottom: 1.75rem;
+}
+
+/* =============================================================
+   PAGE LAYOUT
+   ============================================================= */
+.page {
+  min-height: 100%;
+}
+
+/* Narrow centered column - used for login/register/change-password */
+.page-narrow {
+  max-width: 380px;
+  margin: 0 auto;
+  padding: 4.5rem 1.5rem 3rem;
+}
+
+/* Wide column - used for the employee and admin dashboards */
+.page-wide {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 1.5rem 3rem;
+}
+
+/* Subtle dotted texture behind auth pages, evokes a printed menu board
+   rather than a flat gradient background. */
 .auth-backdrop {
   min-height: 100%;
   background-image: radial-gradient(var(--line) 1px, transparent 1px);
-  background-size: 18px 18px; background-position: -9px -9px;
+  background-size: 18px 18px;
+  background-position: -9px -9px;
 }
-.auth-card { background: var(--base-raised); border: 1px solid var(--line); border-radius: var(--radius); padding: 2.25rem 2rem; }
-.auth-logo { display: block; height: 40px; margin: 0 auto 1.75rem; }
-.auth-foot { margin-top: 1.5rem; text-align: center; font-size: 0.9rem; color: var(--ink-soft); }
-.topbar { display: flex; align-items: center; justify-content: space-between; padding: 1.1rem 1.5rem; border-bottom: 1px solid var(--line); margin-bottom: 2rem; }
-.topbar-brand { display: flex; align-items: center; gap: 0.65rem; }
-.topbar-brand img { height: 30px; width: auto; }
-.topbar-brand span { font-family: var(--font-display); font-weight: 600; font-size: 1.15rem; }
-.topbar-actions { display: flex; align-items: center; gap: 1.25rem; font-size: 0.92rem; }
-.topbar-actions a { color: var(--ink-soft); }
-.topbar-actions a:hover { color: var(--accent-dark); }
-.greeting { color: var(--ink-soft); font-size: 0.95rem; margin-top: -0.6rem; }
-.field { margin-bottom: 1.1rem; }
-.field label { display: block; font-size: 0.86rem; color: var(--ink-soft); margin-bottom: 0.35rem; }
-.field input, .field select {
-  width: 100%; padding: 0.6rem 0.7rem; font-size: 0.95rem; font-family: var(--font-body);
-  color: var(--ink); background: var(--base-raised); border: 1px solid var(--line); border-radius: var(--radius);
+
+.auth-card {
+  background: var(--base-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 2.25rem 2rem;
 }
-.field input:focus, .field select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(201, 122, 43, 0.15); }
+
+.auth-foot {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+
+/* =============================================================
+   TOP NAVIGATION BAR (dashboards)
+   ============================================================= */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.5rem;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 2rem;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  font-size: 0.92rem;
+}
+
+.topbar-actions a {
+  color: var(--ink-soft);
+}
+
+.topbar-actions a:hover {
+  color: var(--accent-dark);
+}
+
+.greeting {
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  margin-top: -0.6rem; /* pulls the subtitle closer to the h1 above it */
+}
+
+/* =============================================================
+   FORM FIELDS
+   ============================================================= */
+.field {
+  margin-bottom: 1.1rem;
+}
+
+.field label {
+  display: block;
+  font-size: 0.86rem;
+  color: var(--ink-soft);
+  margin-bottom: 0.35rem;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  padding: 0.6rem 0.7rem;
+  font-size: 0.95rem;
+  font-family: var(--font-body);
+  color: var(--ink);
+  background: var(--base-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.field input:focus,
+.field select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(201, 122, 43, 0.15);
+}
+
+/* =============================================================
+   BUTTONS
+   ============================================================= */
 .btn {
-  display: inline-block; padding: 0.65rem 1.3rem; font-size: 0.95rem; font-family: var(--font-body);
-  font-weight: 600; border: none; border-radius: var(--radius); cursor: pointer;
-  background: var(--accent); color: #fff; transition: background 0.15s ease;
+  display: inline-block;
+  padding: 0.65rem 1.3rem;
+  font-size: 0.95rem;
+  font-family: var(--font-body);
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  background: var(--accent);
+  color: #fff;
+  transition: background 0.15s ease;
 }
-.btn:hover { background: var(--accent-dark); }
-.btn:disabled { background: var(--line); color: var(--ink-soft); cursor: not-allowed; }
-.btn-quiet { background: transparent; color: var(--ink-soft); border: 1px solid var(--line); }
-.btn-quiet:hover { background: var(--base); color: var(--ink); }
-.btn-danger { background: transparent; color: var(--accent-chili); border: 1px solid var(--accent-chili); }
-.btn-danger:hover { background: var(--accent-chili); color: #fff; }
-.btn-sm { padding: 0.35rem 0.8rem; font-size: 0.82rem; }
-.btn-block { display: block; width: 100%; }
-.msg-error { color: var(--accent-chili); font-size: 0.9rem; margin: 0.75rem 0; }
-.msg-success { color: var(--success); font-size: 0.9rem; margin: 0.75rem 0; }
-.menu-hero { border: 1px solid var(--line); border-radius: var(--radius); padding: 2rem; margin-bottom: 2.5rem; background: var(--base-raised); }
-.menu-hero-eyebrow { font-size: 0.85rem; color: var(--ink-soft); margin-bottom: 0.3rem; }
-.menu-hero-name { font-family: var(--font-display); font-size: 2rem; font-weight: 600; margin: 0 0 0.6rem; line-height: 1.15; }
+
+.btn:hover {
+  background: var(--accent-dark);
+}
+
+.btn:disabled {
+  background: var(--line);
+  color: var(--ink-soft);
+  cursor: not-allowed;
+}
+
+/* Secondary button style - used for "Cancel", "Clear", less important actions */
+.btn-quiet {
+  background: transparent;
+  color: var(--ink-soft);
+  border: 1px solid var(--line);
+}
+
+.btn-quiet:hover {
+  background: var(--base);
+  color: var(--ink);
+}
+
+/* Destructive action style - used for "Delete" */
+.btn-danger {
+  background: transparent;
+  color: var(--accent-chili);
+  border: 1px solid var(--accent-chili);
+}
+
+.btn-danger:hover {
+  background: var(--accent-chili);
+  color: #fff;
+}
+
+.btn-sm {
+  padding: 0.35rem 0.8rem;
+  font-size: 0.82rem;
+}
+
+.btn-block {
+  display: block;
+  width: 100%;
+}
+
+/* =============================================================
+   FEEDBACK MESSAGES (success / error text under forms)
+   ============================================================= */
+.msg-error {
+  color: var(--accent-chili);
+  font-size: 0.9rem;
+  margin: 0.75rem 0;
+}
+
+.msg-success {
+  color: var(--success);
+  font-size: 0.9rem;
+  margin: 0.75rem 0;
+}
+
+/* =============================================================
+   "TODAY'S MENU" HERO CARD (employee dashboard)
+   ============================================================= */
+.menu-hero {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 2rem;
+  margin-bottom: 2.5rem;
+  background: var(--base-raised);
+}
+
+.menu-hero-eyebrow {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  margin-bottom: 0.3rem;
+}
+
+.menu-hero-name {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 600;
+  margin: 0 0 0.6rem;
+  line-height: 1.15;
+}
+
 .price-tag {
-  display: inline-block; font-family: var(--font-display); font-weight: 600; color: var(--accent-dark);
-  font-size: 1.15rem; border-bottom: 2px solid var(--accent); padding-bottom: 2px; margin-bottom: 1.5rem;
+  display: inline-block;
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--accent-dark);
+  font-size: 1.15rem;
+  border-bottom: 2px solid var(--accent);
+  padding-bottom: 2px;
+  margin-bottom: 1.5rem;
 }
-.order-form { display: flex; align-items: flex-end; gap: 1rem; }
-.order-form .field { margin-bottom: 0; }
-.order-form input[type="number"] { width: 90px; }
-.menu-empty { color: var(--ink-soft); font-style: italic; }
-.order-list { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--line); }
-.order-list li { display: flex; justify-content: space-between; padding: 0.85rem 0; border-bottom: 1px solid var(--line); font-size: 0.92rem; }
-.order-list .order-date { color: var(--ink-soft); min-width: 90px; }
-.order-list .order-status { color: var(--success); font-weight: 600; }
-.stat-strip { display: flex; gap: 2.5rem; padding: 1.4rem 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-bottom: 2rem; }
-.stat { display: flex; flex-direction: column; }
-.stat-value { font-family: var(--font-display); font-size: 1.6rem; font-weight: 600; color: var(--accent-dark); }
-.stat-label { font-size: 0.85rem; color: var(--ink-soft); }
-.data-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; margin-bottom: 1rem; }
-.data-table th { text-align: left; font-weight: 600; font-size: 0.82rem; color: var(--ink-soft); padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--ink); }
-.data-table td { padding: 0.65rem 0.8rem; border-bottom: 1px solid var(--line); }
-.data-table tr:hover td { background: rgba(201, 122, 43, 0.04); }
-.data-table tfoot td { font-weight: 700; border-top: 2px solid var(--ink); border-bottom: none; }
-.panel-row { display: flex; align-items: center; gap: 0.9rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
-.panel-row select { padding: 0.55rem 0.7rem; border: 1px solid var(--line); border-radius: var(--radius); font-family: var(--font-body); font-size: 0.92rem; background: var(--base-raised); }
-.filter-row { display: flex; align-items: flex-end; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1.5rem; padding: 1rem; background: var(--base-raised); border: 1px solid var(--line); border-radius: var(--radius); }
-.filter-row .field { margin-bottom: 0; min-width: 140px; }
-.chip-group { display: flex; gap: 0.4rem; }
+
+.order-form {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+}
+
+.order-form .field {
+  margin-bottom: 0;
+}
+
+.order-form input[type="number"] {
+  width: 90px;
+}
+
+.menu-empty {
+  color: var(--ink-soft);
+  font-style: italic;
+}
+
+/* =============================================================
+   ORDER HISTORY LIST (employee dashboard)
+   ============================================================= */
+.order-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-top: 1px solid var(--line);
+}
+
+.order-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.92rem;
+}
+
+.order-list .order-date {
+  color: var(--ink-soft);
+  min-width: 90px;
+}
+
+.order-list .order-status {
+  color: var(--success);
+  font-weight: 600;
+}
+
+/* =============================================================
+   DATA TABLES (used for menus, vendors, users, orders)
+   ============================================================= */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+  margin-bottom: 1rem;
+}
+
+.data-table th {
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid var(--ink);
+}
+
+.data-table td {
+  padding: 0.65rem 0.8rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.data-table tr:hover td {
+  background: rgba(201, 122, 43, 0.04);
+}
+
+/* The "Grand total" row at the bottom of the orders table */
+.data-table tfoot td {
+  font-weight: 700;
+  border-top: 2px solid var(--ink);
+  border-bottom: none;
+}
+
+/* =============================================================
+   PAGINATION (components/Pagination.jsx)
+   Used under the Manage Users table (5 rows/page) and the
+   Orders table (10 rows/page).
+   ============================================================= */
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.75rem 0 1.75rem;
+}
+
+.pagination-info {
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+}
+
+/* =============================================================
+   GENERIC ROW OF CONTROLS (used for "add vendor" form,
+   "assign vendor" controls, export button, etc.)
+   ============================================================= */
+.panel-row {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.panel-row select {
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  background: var(--base-raised);
+}
+
+/* =============================================================
+   ORDERS FILTER BAR (Today / Yesterday / Custom range + status)
+   ============================================================= */
+.filter-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: var(--base-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.filter-row .field {
+  margin-bottom: 0;
+  min-width: 140px;
+}
+
+.chip-group {
+  display: flex;
+  gap: 0.4rem;
+}
+
 .chip {
-  padding: 0.4rem 0.85rem; font-size: 0.85rem; border: 1px solid var(--line); border-radius: 999px;
-  background: var(--base-raised); color: var(--ink-soft); cursor: pointer; font-family: var(--font-body);
+  padding: 0.4rem 0.85rem;
+  font-size: 0.85rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--base-raised);
+  color: var(--ink-soft);
+  cursor: pointer;
+  font-family: var(--font-body);
 }
-.chip.active { background: var(--ink); color: #fff; border-color: var(--ink); }
-.badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.78rem; font-weight: 600; }
-.badge-completed { background: rgba(63, 122, 82, 0.12); color: var(--success); }
-.badge-pending { background: rgba(201, 122, 43, 0.14); color: var(--accent-dark); }
-.badge-cancelled { background: rgba(139, 38, 53, 0.1); color: var(--accent-chili); }
-.tab-row { display: flex; gap: 0.5rem; margin-bottom: 1.25rem; border-bottom: 1px solid var(--line); }
+
+.chip.active {
+  background: var(--ink);
+  color: #fff;
+  border-color: var(--ink);
+}
+
+/* =============================================================
+   STATUS BADGES (Completed / Pending / Cancelled pills)
+   ============================================================= */
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.badge-completed {
+  background: rgba(63, 122, 82, 0.12);
+  color: var(--success);
+}
+
+.badge-pending {
+  background: rgba(201, 122, 43, 0.14);
+  color: var(--accent-dark);
+}
+
+.badge-cancelled {
+  background: rgba(139, 38, 53, 0.1);
+  color: var(--accent-chili);
+}
+
+/* =============================================================
+   TABS (User-wise / Vendor-wise report toggle)
+   ============================================================= */
+.tab-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid var(--line);
+}
+
 .tab-btn {
-  padding: 0.6rem 1rem; font-size: 0.9rem; font-family: var(--font-body); font-weight: 600;
-  background: none; border: none; border-bottom: 2px solid transparent; color: var(--ink-soft); cursor: pointer;
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+  font-family: var(--font-body);
+  font-weight: 600;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
 }
-.tab-btn.active { color: var(--accent-dark); border-bottom-color: var(--accent); }
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+.tab-btn.active {
+  color: var(--accent-dark);
+  border-bottom-color: var(--accent);
+}
+
+/* =============================================================
+   ACCESSIBILITY
+   ============================================================= */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}

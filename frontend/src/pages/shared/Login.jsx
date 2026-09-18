@@ -1,15 +1,17 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-
-const LOGO_URL =
-  'https://365news.pk/wp-content/uploads/2025/01/channels4_profile-removebg-preview-1.png';
+import BrandMark from '../../components/BrandMark';
 
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
+
+  // Controlled form fields
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  // UI feedback state
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -19,8 +21,11 @@ export default function Login() {
     setSubmitting(true);
     try {
       const user = await login(email, password);
+      // Send admins to their dashboard, employees to the ordering screen.
       navigate(user.role === 'ADMIN' ? '/admin' : '/');
     } catch (err) {
+      // err.response.data.error is the message our backend sends back
+      // (e.g. "Invalid email or password.")
       setError(err.response?.data?.error || 'Login failed. Please try again.');
     } finally {
       setSubmitting(false);
@@ -30,7 +35,7 @@ export default function Login() {
   return (
     <div className="auth-backdrop page">
       <div className="page-narrow">
-        <img src={LOGO_URL} alt="Company logo" className="auth-logo" />
+        <BrandMark size="lg" />
         <div className="auth-card">
           <h1>Today's lunch</h1>
           <p style={{ color: 'var(--ink-soft)', marginBottom: '1.5rem' }}>
@@ -39,11 +44,23 @@ export default function Login() {
           <form onSubmit={handleSubmit}>
             <div className="field">
               <label>Email</label>
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="username" />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                autoComplete="username"
+              />
             </div>
             <div className="field">
               <label>Password</label>
-              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+              />
             </div>
             {error && <p className="msg-error">{error}</p>}
             <button type="submit" className="btn btn-block" disabled={submitting}>

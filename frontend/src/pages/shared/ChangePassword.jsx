@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../../api/client';
+import BrandMark from '../../components/BrandMark';
 
-const LOGO_URL =
-  'https://365news.pk/wp-content/uploads/2025/01/channels4_profile-removebg-preview-1.png';
-
+// Available to both employees and admins (see App.jsx route setup).
+// On success the backend clears the session cookies, so we redirect to
+// /login after a short delay - the user needs to sign back in with the
+// new password.
 export default function ChangePassword() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
@@ -20,10 +22,15 @@ export default function ChangePassword() {
     e.preventDefault();
     setError('');
     setMessage('');
+
+    // Client-side check to catch typos before hitting the server -
+    // the backend doesn't need to know about "confirmPassword" at all,
+    // it only receives currentPassword/newPassword.
     if (form.newPassword !== form.confirmPassword) {
       setError('New password and confirmation do not match.');
       return;
     }
+
     setSubmitting(true);
     try {
       const res = await api.post('/auth/change-password', {
@@ -42,21 +49,44 @@ export default function ChangePassword() {
   return (
     <div className="auth-backdrop page">
       <div className="page-narrow">
-        <img src={LOGO_URL} alt="Company logo" className="auth-logo" />
+        <BrandMark size="lg" />
         <div className="auth-card">
           <h1>Change password</h1>
           <form onSubmit={handleSubmit}>
             <div className="field">
               <label>Current password</label>
-              <input type="password" name="currentPassword" value={form.currentPassword} onChange={handleChange} required autoComplete="current-password" />
+              <input
+                type="password"
+                name="currentPassword"
+                value={form.currentPassword}
+                onChange={handleChange}
+                required
+                autoComplete="current-password"
+              />
             </div>
             <div className="field">
               <label>New password</label>
-              <input type="password" name="newPassword" value={form.newPassword} onChange={handleChange} required minLength={8} autoComplete="new-password" />
+              <input
+                type="password"
+                name="newPassword"
+                value={form.newPassword}
+                onChange={handleChange}
+                required
+                minLength={8}
+                autoComplete="new-password"
+              />
             </div>
             <div className="field">
               <label>Confirm new password</label>
-              <input type="password" name="confirmPassword" value={form.confirmPassword} onChange={handleChange} required minLength={8} autoComplete="new-password" />
+              <input
+                type="password"
+                name="confirmPassword"
+                value={form.confirmPassword}
+                onChange={handleChange}
+                required
+                minLength={8}
+                autoComplete="new-password"
+              />
             </div>
             {error && <p className="msg-error">{error}</p>}
             {message && <p className="msg-success">{message}</p>}
